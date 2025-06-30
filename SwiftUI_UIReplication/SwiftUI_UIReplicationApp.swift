@@ -4,7 +4,7 @@ import SwiftUI
 struct SwiftUI_UIReplicationApp: App {
     var body: some Scene {
         WindowGroup {
-//            ContentView()
+            ContentView()
         }
     }
 }

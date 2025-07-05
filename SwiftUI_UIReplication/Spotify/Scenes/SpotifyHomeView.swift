@@ -3,6 +3,7 @@ import SwiftUI
 struct SpotifyHomeView: View {
   @State private var user: User? = nil
   @State private var selectedCategory: SpotifyCategory = .all
+  @State private var products: [Product] = []
 
   var body: some View {
     ZStack {
@@ -10,13 +11,22 @@ struct SpotifyHomeView: View {
         .ignoresSafeArea()
       
       ScrollView(.vertical) {
-        LazyVStack(spacing: 1, pinnedViews: .sectionHeaders) {
+        LazyVStack(pinnedViews: .sectionHeaders) {
           Section {
-            ForEach(0..<20) { _ in
-              Rectangle()
-                .fill(.red)
-                .frame(width: 200, height: 200)
+            VStack(spacing: 20) {
+              recentProducts
+                .padding(.horizontal, 8)
+              
+              ForEach(products) { product in
+                SpotifyNewReleaseCell(thumbnail: product.thumbnail, heading: product.brand ?? "", subHeading: product.category, tittle: product.title, subTittle: product.description) {
+                  print("Added to list")
+                } playPressed: {
+                  print("playPressed")
+                }
+
+              }
             }
+            .padding()
           } header: {
             header
               .background(.spotifyBlack)
@@ -63,9 +73,21 @@ struct SpotifyHomeView: View {
     .padding(.leading, 8)
   }
   
+  private var recentProducts: some View {
+    LazyVGrid(columns: [
+      GridItem(.flexible(maximum: .infinity), spacing: 10, alignment: .center),
+      GridItem(.flexible(maximum: .infinity), alignment: .center)
+    ]) {
+      ForEach(products.prefix(8)) { product in
+        SpotifyRecentCell(imageUrl: product.thumbnail, tittle: product.title)
+      }
+    }
+  }
+  
   func getData() async {
     do {
       user = try await DatabaseHelper().getUsers().first
+      products = try await DatabaseHelper().getProducts()
     } catch {
       print(error)
     }

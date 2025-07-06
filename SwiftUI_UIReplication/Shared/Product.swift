@@ -21,3 +21,22 @@ struct Product: Codable, Identifiable {
 struct ProductMetaData: Codable {
   let createdAt: Date
 }
+
+extension Product {
+  static let mock = Product(
+    id: 1,
+    title: "iPhone 18",
+    description: "Brand new iPhone 18",
+    price: 500,
+    discountPercentage: 0,
+    rating: 5,
+    stock: 10,
+    brand: "Apple",
+    category: "Phone",
+    thumbnail: "https://w7.pngwing.com/pngs/378/624/png-transparent-iphone-14-thumbnail.png",
+    images: [
+      "https://www.pngwing.com/en/free-png-aqhbt"
+    ],
+    meta: ProductMetaData(createdAt: .now)
+  )
+}

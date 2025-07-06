@@ -5,13 +5,13 @@ struct ImageLoader: View {
   var urlString: String
   var contentMode: ContentMode = .fit
   
-    var body: some View {
-        Rectangle()
-        .overlay {
-          SDWebImageLoader(urlString: urlString, contentMode: contentMode)
-        }
-        .clipped()
+  var body: some View {
+    Rectangle()
+    .overlay {
+      SDWebImageLoader(urlString: urlString, contentMode: contentMode)
     }
+    .clipped()
+  }
 }
 
 fileprivate struct SDWebImageLoader: View {
@@ -24,6 +24,7 @@ fileprivate struct SDWebImageLoader: View {
       .indicator(.activity)
       .aspectRatio(contentMode: contentMode)
       .allowsHitTesting(false)
+      .background(.white)
   }
 }
 

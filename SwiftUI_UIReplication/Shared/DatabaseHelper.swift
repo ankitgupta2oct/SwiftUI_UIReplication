@@ -8,7 +8,8 @@ struct DatabaseHelper {
         }
         
         let (data, _) = try await URLSession.shared.data(from: url)
-        let products = try JSONDecoder().decode(ProductArray.self, from: data)
+        let decoder = JSONDecoder.iso8601withFractionalSeconds
+        let products = try decoder.decode(ProductArray.self, from: data)
         return products.products
     }
     
@@ -20,5 +21,26 @@ struct DatabaseHelper {
         let (data, _) = try await URLSession.shared.data(from: url)
         let users = try JSONDecoder().decode(UserArray.self, from: data)
         return users.users
+    }
+}
+
+extension JSONDecoder {
+  
+    static var iso8601withFractionalSeconds: JSONDecoder {
+        let decoder = JSONDecoder()
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let container = try decoder.singleValueContainer()
+            let dateStr = try container.decode(String.self)
+            guard let date = formatter.date(from: dateStr) else {
+                throw DecodingError.dataCorruptedError(
+                    in: container,
+                    debugDescription: "Cannot decode date string \(dateStr)"
+                )
+            }
+            return date
+        }
+        return decoder
     }
 }

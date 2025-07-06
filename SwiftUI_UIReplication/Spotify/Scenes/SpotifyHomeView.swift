@@ -2,8 +2,11 @@ import SwiftUI
 
 struct SpotifyHomeView: View {
   @State private var user: User? = nil
-  @State private var selectedCategory: SpotifyCategory = .all
+  @State private var selectedCategory: String = ""
   @State private var products: [Product] = []
+  @State private var categories: [String] = []
+  @State private var newRelasedProduct: Product?
+  @State private var brandsProducts: [Dictionary<String, [Product]>.Element] = []
 
   var body: some View {
     ZStack {
@@ -14,21 +17,24 @@ struct SpotifyHomeView: View {
         LazyVStack(pinnedViews: .sectionHeaders) {
           Section {
             VStack(spacing: 20) {
+              // Recent Products
               recentProducts
-                .padding(.horizontal, 8)
+                .padding(.horizontal)
               
-              ForEach(products) { product in
-                SpotifyNewReleaseCell(thumbnail: product.thumbnail, heading: product.brand ?? "", subHeading: product.category, tittle: product.title, subTittle: product.description) {
-                  print("Added to list")
-                } playPressed: {
-                  print("playPressed")
-                }
-
+              // New released product
+              if let product = newRelasedProduct {
+                newReleasedProduct(product: product)
+                  .padding(.horizontal)
+              }
+              
+              // Products
+              ForEach(Array(brandsProducts), id: \.0) { (brand, products) in
+                brandProductsView(brand: brand, products: products)
               }
             }
-            .padding()
           } header: {
             header
+              .padding(.leading)
               .background(.spotifyBlack)
           }
         }
@@ -38,6 +44,11 @@ struct SpotifyHomeView: View {
     }
     .task {
       await getData()
+      categories = Array(Set(products.map { $0.category })).sorted()
+      selectedCategory = categories.first ?? ""
+      newRelasedProduct = products.max(by: { $0.meta.createdAt < $1.meta.createdAt })
+      let brandsProducts = Dictionary(grouping: products) { $0.brand ?? "Others"}
+      self.brandsProducts = brandsProducts.sorted {$0.value.count > $1.value.count}
     }
     .toolbarVisibility(.hidden, for: .navigationBar)
   }
@@ -55,9 +66,9 @@ struct SpotifyHomeView: View {
       
       ScrollView(.horizontal) {
         HStack {
-          ForEach(SpotifyCategory.allCases, id: \.self) { category in
+          ForEach(categories, id: \.self) { category in
             SpotifyCategoryCell(
-              tittle: category.rawValue.capitalized,
+              tittle: category.capitalized,
               isSelected: selectedCategory == category
             )
             .onTapGesture {
@@ -70,7 +81,6 @@ struct SpotifyHomeView: View {
       .scrollIndicators(.hidden)
     }
     .padding(.vertical, 25)
-    .padding(.leading, 8)
   }
   
   private var recentProducts: some View {
@@ -80,6 +90,34 @@ struct SpotifyHomeView: View {
     ]) {
       ForEach(products.prefix(8)) { product in
         SpotifyRecentCell(imageUrl: product.thumbnail, tittle: product.title)
+      }
+    }
+  }
+  
+  private func newReleasedProduct(product: Product) -> some View {
+    SpotifyNewReleaseCell(thumbnail: product.thumbnail, heading: product.brand ?? "", subHeading: product.category, tittle: product.title, subTittle: product.description) {
+      print("Added to list")
+    } playPressed: {
+      print("playPressed")
+    }
+  }
+  
+  private func brandProductsView(brand: String, products: [Product]) -> some View {
+    VStack {
+      Text(brand.capitalized)
+        .font(.title)
+        .fontWeight(.medium)
+        .foregroundStyle(.spotifyWhite)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal)
+      
+      ScrollView(.horizontal) {
+        HStack(alignment: .top) {
+          ForEach(products) { product in
+            ImageTittleView(imageUrl: product.thumbnail, tittle: product.title)
+          }
+        }
+        .padding(.horizontal)
       }
     }
   }

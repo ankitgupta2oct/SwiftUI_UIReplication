@@ -15,4 +15,9 @@ struct Product: Codable, Identifiable {
   let category: String
   let thumbnail: String
   let images: [String]
+  let meta: ProductMetaData
+}
+
+struct ProductMetaData: Codable {
+  let createdAt: Date
 }

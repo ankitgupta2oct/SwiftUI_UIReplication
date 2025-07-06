@@ -11,11 +11,10 @@ struct SpotifyNewReleaseCell: View {
   var playPressed: (() -> Void)? = nil
 
   var body: some View {
-    VStack {
+    VStack(alignment: .leading) {
       headerView
-        .frame(maxWidth: .infinity, alignment: .leading)
+      
       releaseDetailView
-        .frame(maxWidth: .infinity, alignment: .leading)
         .background(.spotifyDarkGray)
         .clipShape(.rect(cornerRadius: 10))
     }
@@ -59,8 +58,8 @@ struct SpotifyNewReleaseCell: View {
           Image(systemName: "plus.circle")
             .foregroundStyle(.spotifyLightGray)
             .font(.title2)
-            .padding(30)
-            .offset(x: -30)
+            .padding(20)
+            .offset(x: -20)
             .background(.clear)
             .contentShape(.rect)
             .onTapGesture {
@@ -72,17 +71,18 @@ struct SpotifyNewReleaseCell: View {
           Image(systemName: "plus.circle.fill")
             .foregroundStyle(.spotifyWhite)
             .font(.title2)
-            .padding(30)
-            .offset(x: 30)
+            .padding(20)
+            .offset(x: 20)
             .background(.clear)
             .contentShape(.rect)
             .onTapGesture {
               playPressed?()
             }
         }
-        .padding(.bottom, 5)
+//        .padding(.bottom, 5)
       }
-      .padding(8)
+        .padding(8)
+        .frame(maxWidth: .infinity, maxHeight: 140)
     }
   }
 }

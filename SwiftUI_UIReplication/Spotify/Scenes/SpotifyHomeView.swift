@@ -89,7 +89,11 @@ struct SpotifyHomeView: View {
       GridItem(.flexible(maximum: .infinity), alignment: .center)
     ]) {
       ForEach(products.prefix(8)) { product in
-        SpotifyRecentCell(imageUrl: product.thumbnail, tittle: product.title)
+        NavigationLink {
+          SpotifyPlaylistView(product: product, userName: user?.fullName ?? "User")
+        } label: {
+          SpotifyRecentCell(imageUrl: product.thumbnail, tittle: product.title)
+        }
       }
     }
   }
@@ -114,7 +118,7 @@ struct SpotifyHomeView: View {
       ScrollView(.horizontal) {
         HStack(alignment: .top) {
           ForEach(products) { product in
-            ImageTittleView(imageUrl: product.thumbnail, tittle: product.title)
+            SpotifyImageTittleView(imageUrl: product.thumbnail, tittle: product.title)
           }
         }
         .padding(.horizontal)
@@ -133,5 +137,7 @@ struct SpotifyHomeView: View {
 }
 
 #Preview {
-  SpotifyHomeView()
+  NavigationStack {
+    SpotifyHomeView()
+  }
 }

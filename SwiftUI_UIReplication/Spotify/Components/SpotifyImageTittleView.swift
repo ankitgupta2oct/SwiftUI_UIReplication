@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct ImageTittleView: View {
+struct SpotifyImageTittleView: View {
   let imageUrl: String
   let tittle: String
   
@@ -22,5 +22,5 @@ struct ImageTittleView: View {
 }
 
 #Preview {
-  ImageTittleView(imageUrl: Constants.imageUrl, tittle: "Hello World!!!!")
+  SpotifyImageTittleView(imageUrl: Constants.imageUrl, tittle: "Hello World!!!!")
 }

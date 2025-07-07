@@ -14,8 +14,10 @@ struct SpotifyPlaylistHeaderCell: View {
       .overlay (
         VStack(alignment: .leading) {
           Text(tittle)
+            .lineLimit(1)
             .font(.headline)
           Text(subTittle)
+            .lineLimit(2)
             .font(.largeTitle)
             .bold()
         }

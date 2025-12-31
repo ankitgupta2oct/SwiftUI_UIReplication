@@ -22,6 +22,7 @@ struct BumbleFilterView: View {
                 }
                 .contentShape(.rect)
                 .onTapGesture {
+                    guard selection != option else { return }
                     selection = option
                 }
                 .foregroundStyle(selection == option ? .bumbleBlack : .bumbleGray)

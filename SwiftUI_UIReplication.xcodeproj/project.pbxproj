@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6F672A8F2E12F012008C4488 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 6F672A8E2E12F012008C4488 /* SDWebImageSwiftUI */; };
+		6FA391A92F0557C9008C85D3 /* SwiftfulUI in Frameworks */ = {isa = PBXBuildFile; productRef = 6FA391A82F0557C9008C85D3 /* SwiftfulUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6FA391A92F0557C9008C85D3 /* SwiftfulUI in Frameworks */,
 				6F672A8F2E12F012008C4488 /* SDWebImageSwiftUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -71,6 +73,7 @@
 			name = SwiftUI_UIReplication;
 			packageProductDependencies = (
 				6F672A8E2E12F012008C4488 /* SDWebImageSwiftUI */,
+				6FA391A82F0557C9008C85D3 /* SwiftfulUI */,
 			);
 			productName = SwiftUI_UIReplication;
 			productReference = 6F672A752E12EF76008C4488 /* SwiftUI_UIReplication.app */;
@@ -102,6 +105,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				6F672A8D2E12F012008C4488 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
+				6FA391A72F0557C9008C85D3 /* XCRemoteSwiftPackageReference "SwiftfulUI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 6F672A762E12EF76008C4488 /* Products */;
@@ -349,6 +353,14 @@
 				minimumVersion = 3.1.3;
 			};
 		};
+		6FA391A72F0557C9008C85D3 /* XCRemoteSwiftPackageReference "SwiftfulUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SwiftfulThinking/SwiftfulUI";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -356,6 +368,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 6F672A8D2E12F012008C4488 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
 			productName = SDWebImageSwiftUI;
+		};
+		6FA391A82F0557C9008C85D3 /* SwiftfulUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6FA391A72F0557C9008C85D3 /* XCRemoteSwiftPackageReference "SwiftfulUI" */;
+			productName = SwiftfulUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

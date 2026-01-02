@@ -54,13 +54,23 @@ struct BumbleHomeView: View {
         selectedIndex += 1
     }
     
+    private func revert() {
+        guard users.indices.contains(selectedIndex - 1) else {
+            return
+        }
+        
+        let user = users[selectedIndex - 1]
+        cardOffSets[user.id] = nil
+        selectedIndex -= 1
+    }
+    
     private func getData() async {
         guard users.isEmpty else { return }
-      do {
-          users = try await DatabaseHelper().getUsers()
-      } catch {
-        print(error)
-      }
+        do {
+            users = try await DatabaseHelper().getUsers()
+        } catch {
+            print(error)
+        }
     }
 }
 
@@ -70,6 +80,9 @@ private extension BumbleHomeView {
             HStack {
                 Image(systemName: "line.horizontal.3")
                 Image(systemName: "arrow.uturn.left")
+                    .onTapGesture {
+                        revert()
+                    }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             
@@ -78,8 +91,13 @@ private extension BumbleHomeView {
                 .foregroundStyle(.bumbleYellow)
                 .frame(maxWidth: .infinity, alignment: .center)
             
-            Image(systemName: "slider.horizontal.3")
-                .frame(maxWidth: .infinity, alignment: .trailing)
+            NavigationLink {
+                BumbleChatView()
+            } label: {
+                Image(systemName: "slider.horizontal.3")
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+            }
+
         }
         .font(.title2)
         .foregroundStyle(.bumbleBlack)
@@ -151,5 +169,7 @@ private extension BumbleHomeView {
 }
 
 #Preview {
-    BumbleHomeView()
+    NavigationStack {
+        BumbleHomeView()
+    }
 }

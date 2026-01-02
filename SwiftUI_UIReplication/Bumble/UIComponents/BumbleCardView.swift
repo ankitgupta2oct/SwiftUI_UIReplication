@@ -157,12 +157,12 @@ struct BumbleCardView: View {
             HStack {
                 actionView(icon: "xmark")
                     .onTapGesture {
-                        likePressed?()
+                        rejectPressed?()
                     }
                 Spacer(minLength: 0)
                 actionView(icon: "checkmark")
                     .onTapGesture {
-                        rejectPressed?()
+                        likePressed?()
                     }
             }
             

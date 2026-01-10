@@ -6,23 +6,23 @@ struct HomeView: View {
             Color.bumbleWhite.ignoresSafeArea()
             
             VStack {
-                NavigationLink {
-                    SpotifyHomeView()
-                } label: {
-                    Text("Spotify")
-                        .frame(maxWidth: .infinity)
-                        .homeItemTheme()
-                }
-                NavigationLink {
-                    BumbleHomeView()
-                } label: {
-                    Text("Bumble")
-                        .frame(maxWidth: .infinity)
-                        .homeItemTheme()
-                }
+                appCell(title: "Spotify", view: SpotifyHomeView())
+                appCell(title: "Bumble", view: BumbleHomeView())
+                appCell(title: "Netfilx", view: NetflixHomeView())
             }
+            .toolbarVisibility(.hidden, for: .navigationBar)
             .padding()
             .navigationTitle("UI Replications")
+        }
+    }
+    
+    func appCell(title: String, view: some View) -> some View {
+        NavigationLink {
+            view
+        } label: {
+            Text(title)
+                .frame(maxWidth: .infinity)
+                .homeItemTheme()
         }
     }
 }

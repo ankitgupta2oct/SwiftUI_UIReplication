@@ -7,45 +7,15 @@ struct NetflixHomeView: View {
     @State private var user: User?
     @State private var items =  [String: [Product]]()
     @State private var heroProduct: Product? = nil
+    @State private var scrollViewOffset: CGFloat = .zero
     
     var body: some View {
-        ZStack {
+        ZStack(alignment: .top) {
             Color.netflixBlack.ignoresSafeArea()
             
-            ScrollView {
-                VStack {
-                    Rectangle()
-                        .fill(.clear)
-                        .frame(height: headerSize.height)
-                    
-                    if let heroProduct {
-                        netflixHeroCell(heroProduct: heroProduct)
-                        .padding(20)
-                    }
-                    
-                    productsView
-                }
-            }
-            .scrollIndicators(.hidden)
-            
-            VStack {
-                VStack {
-                    header
-                    netflixFilterBarView
-                }
-                .background {
-                    GeometryReader { proxy in
-                        Color.clear
-                            .onAppear {
-                                headerSize = proxy.frame(in: .global).size
-                            }
-                            .onChange(of: proxy.frame(in: .global)) { _, newValue in
-                                headerSize = newValue.size
-                            }
-                    }
-                }
-                Spacer()
-            }
+            backgroundGradientLayer
+            productsScrollView
+            header
         }
         .toolbarVisibility(.hidden, for: .navigationBar)
         .foregroundStyle(.netflixWhite)
@@ -56,7 +26,60 @@ struct NetflixHomeView: View {
 }
 
 private extension NetflixHomeView {
-    var header : some View {
+    
+    private var backgroundGradientLayer: some View {
+        ZStack {
+            LinearGradient(colors: [.netflixDarkGray.opacity(1), .netflixDarkGray.opacity(0)], startPoint: .top, endPoint: .bottom)
+                .ignoresSafeArea()
+            
+            LinearGradient(colors: [.netflixDarkRed.opacity(0.5), .netflixDarkRed.opacity(0)], startPoint: .top, endPoint: .bottom)
+                .ignoresSafeArea()
+        }
+        .frame(maxHeight: max(10, (400 + (scrollViewOffset * 0.75))))
+        .opacity(scrollViewOffset < -250 ? 0 : 1)
+        .animation(.easeInOut, value: scrollViewOffset)
+    }
+    
+    var header: some View {
+        VStack {
+            VStack {
+                navigationBarView
+                if scrollViewOffset > -20 {
+                    netflixFilterBarView
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                }
+            }
+            .background {
+                GeometryReader { proxy in
+                    Color.clear
+                        .onAppear {
+                            if headerSize == .zero {
+                                headerSize = proxy.frame(in: .local).size
+                            }
+                        }
+                        .onChange(of: proxy.frame(in: .local)) { _, newValue in
+                            if headerSize == .zero {
+                                headerSize = newValue.size
+                            }
+                        }
+                }
+            }
+            .padding(.bottom, 8)
+            .background {
+                if scrollViewOffset < -70 {
+                    Rectangle()
+                        .fill(.clear)
+                        .background(.ultraThinMaterial)
+                        .brightness(-0.2)
+                        .ignoresSafeArea()
+                }
+            }
+            .animation(.smooth, value: scrollViewOffset)
+            Spacer()
+        }
+    }
+    
+    var navigationBarView : some View {
         HStack {
             Text("For You")
                 .font(.title)
@@ -99,7 +122,28 @@ private extension NetflixHomeView {
         )
     }
     
-    var productsView: some View {
+    var productsScrollView: some View {
+        ScrollViewWithOnScrollChanged(
+            .vertical,
+            showsIndicators: false) {
+                VStack {
+                    Rectangle()
+                        .fill(.clear)
+                        .frame(height: headerSize.height)
+                    
+                    if let heroProduct {
+                        netflixHeroCell(heroProduct: heroProduct)
+                        .padding(20)
+                    }
+                    
+                    productsListView
+                }
+            } onScrollChanged: { offset in
+                scrollViewOffset = min(0, offset.y)
+            }
+    }
+    
+    var productsListView: some View {
         LazyVStack(spacing: 20) {
             ForEach(items.sorted(by: {$0.key < $1.key}).enumerated(), id: \.offset) { rowIndex, item in
                 VStack(alignment: .leading) {
@@ -108,11 +152,11 @@ private extension NetflixHomeView {
                     
                     ScrollView(.horizontal) {
                         LazyHStack {
-                            ForEach(item.value.enumerated(), id: \.offset) { (index, product) in
+                            ForEach(item.value.enumerated(), id: \.offset) { (index, product) in                                
                                 NetflixMovieCell(
                                     title: product.title,
                                     image: product.thumbnail,
-                                    isRecentlyAdded: Bool.random(),
+                                    isRecentlyAdded: product.isRecent,
                                     ranking: rowIndex == 1 ? index + 1 : nil
                                 )
                             }

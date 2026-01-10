@@ -5,7 +5,7 @@ struct NetflixHomeView: View {
     @State private var selectedFilter: FilterModel?
     @State private var headerSize: CGSize = .zero
     @State private var user: User?
-    @State private var products = [Product]()
+    @State private var items =  [String: [Product]]()
     @State private var heroProduct: Product? = nil
     
     var body: some View {
@@ -19,23 +19,11 @@ struct NetflixHomeView: View {
                         .frame(height: headerSize.height)
                     
                     if let heroProduct {
-                        NetflixHeroCell(
-                            imageName: heroProduct.thumbnail,
-                            isNetflixFlim: true,
-                            title: heroProduct.title,
-                            catogories: [heroProduct.category.capitalized, heroProduct.brand!.capitalized],
-                            onBackPressed: {
-                            }, onPlayPressed: {
-                            }, onListPressed: {
-                            }
-                        )
+                        netflixHeroCell(heroProduct: heroProduct)
+                        .padding(20)
                     }
                     
-                    ForEach(0..<10) { _ in
-                        Rectangle()
-                            .fill(.orange)
-                            .frame(height: 200)
-                    }
+                    productsView
                 }
             }
             .scrollIndicators(.hidden)
@@ -85,6 +73,19 @@ private extension NetflixHomeView {
         .font(.title2)
     }
     
+    func netflixHeroCell(heroProduct: Product) -> some View {
+        NetflixHeroCell(
+            imageName: heroProduct.thumbnail,
+            isNetflixFlim: true,
+            title: heroProduct.title,
+            catogories: [heroProduct.category.capitalized, heroProduct.brand!.capitalized],
+            onBackPressed: {
+            }, onPlayPressed: {
+            }, onListPressed: {
+            }
+        )
+    }
+    
     var netflixFilterBarView: some View {
         NetflixFilterBarView(
             onXMarkPressed: {
@@ -98,10 +99,35 @@ private extension NetflixHomeView {
         )
     }
     
+    var productsView: some View {
+        LazyVStack(spacing: 20) {
+            ForEach(items.sorted(by: {$0.key < $1.key}).enumerated(), id: \.offset) { rowIndex, item in
+                VStack(alignment: .leading) {
+                    Text(item.key.capitalized)
+                        .font(.headline)
+                    
+                    ScrollView(.horizontal) {
+                        LazyHStack {
+                            ForEach(item.value.enumerated(), id: \.offset) { (index, product) in
+                                NetflixMovieCell(
+                                    title: product.title,
+                                    image: product.thumbnail,
+                                    isRecentlyAdded: Bool.random(),
+                                    ranking: rowIndex == 1 ? index + 1 : nil
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     func getData() async {
       do {
           user = try await DatabaseHelper().getUsers().first
-          products = try await DatabaseHelper().getProducts()
+          let products = try await DatabaseHelper().getProducts()
+          items = Dictionary(grouping: products, by: { $0.category })
           heroProduct = products[7]
       } catch {
         print(error)
